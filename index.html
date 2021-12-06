@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Password Generator</title>
+    <link rel="stylesheet" href="./app.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Password Generator</h1>
+      <section class="password">
+        <p
+          id="password-display"
+          aria-live="polite"
+          class="password__display"
+        ></p>
+      </section>
+      <form id="options-form">
+        <div class="input-group">
+          <label for="length">Length</label>
+          <input id="length" name="length" type="number" value="12" />
+        </div>
+        <div class="input-group">
+          <label>
+            <input id="numbers" name="numbers" type="checkbox" checked />
+            <span>Numbers?</span>
+          </label>
+        </div>
+        <div class="input-group">
+          <label>
+            <input id="symbols" name="symbols" type="checkbox" checked />
+            <span>Symbols?</span>
+          </label>
+        </div>
+        <div class="controls">
+          <button id="generate-password" type="submit">Generate</button>
+          <button id="copy-password" type="button">Copy Password</button>
+        </div>
+      </form>
+    </main>
+    <script>
+      const alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const numbers = "0123456789";
+      const symbols = "!@#$%^&*_-+=";
+      const formEl = document.getElementById("options-form");
+      const passwordDisplayEl = document.getElementById("password-display");
+      const copyPasswordEl = document.getElementById("copy-password");
+
+      window.addEventListener("load", function () {
+        passwordDisplayEl.innerText = createPassword();
+      });
+
+      formEl.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const formData = new FormData(formEl);
+        const length = formData.get("length");
+        const numbers = formData.get("numbers");
+        const symbols = formData.get("symbols");
+        passwordDisplayEl.innerText = createPassword(length, numbers, symbols);
+      });
+
+      copyPasswordEl.addEventListener("click", function () {
+        const copyText = passwordDisplayEl.innerText;
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(copyText).then(
+            () => {
+              alert("Copied the text: " + copyText);
+            },
+            (err) => {
+              console.log("Failed to copy the text to clipboard.", err);
+            }
+          );
+        } else if (window.clipboardData) {
+          window.clipboardData.setData("Text", copyText);
+        }
+      });
+
+      const createPassword = (
+        length = 12,
+        hasNumbers = true,
+        hasSymbols = true
+      ) => {
+        let chars = alpha;
+        let password = "";
+        hasNumbers ? (chars += numbers) : "";
+        hasSymbols ? (chars += symbols) : "";
+
+        for (let i = 0; i < length; i++) {
+          password += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return password;
+      };
+    </script>
+  </body>
+</html>
